@@ -1,0 +1,51 @@
+body
+{
+	font-family:arial;
+	font-size:10pt;
+}
+
+a
+{
+	text-decoration:none;
+}
+
+table
+{
+	font-size:10pt;
+}
+
+.analysis_table
+{
+	font-size:smaller;
+}
+
+.act_green
+{
+	background-color:#0f0;
+}
+
+.act_amber
+{
+	background-color:#f60;
+}
+
+.act_red
+{
+	background-color:#f00;
+}
+
+.act_black
+{
+	background-color:#000;
+	color:#fff;
+}
+
+#tplayers thead, #tteams thead
+{
+	font-weight:bold;
+}
+
+.alt
+{
+	background-color:#ececec;
+}
