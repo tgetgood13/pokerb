@@ -9,7 +9,7 @@
 
 <?php
 
-	$rset = getCVByTypeAndThreshold(1, 1000, true);
+	$rset = getCVByTypeAndThreshold($db, 1, 1000, true);
 
 ?>
 	<table cellspacing="0" cellpadding="0">
@@ -27,7 +27,7 @@
 		<th>Cash</th>
 		<th>Comments</th>
 <?php
-	for($i=0; $i<mysql_numrows($rset); $i++)
+	for($i=0; $i<mysqli_num_rows($rset); $i++)
 	{
 		$year = mysql_result($rset,$i,"year");
 		switch($year)
