@@ -11,11 +11,16 @@ include("../dblayer.php");
 
 function openProdConnection()
 {
-	$username="USER";
-	$password="PASS";
-    $database="DBASE";
+	$app->get('/', function() use($app) {
+		$app['monolog']->addDebug('logging output.');
+		return str_repeat('Hello', getenv('TIMES'));
+	  });
+
+	$username=getenv('DBUSER');
+	$password=getenv('DBPASS');
+    $database=getenv('DBNAME');
 	
-	mysql_connect('HOST',$username,$password);
+	mysql_connect(getenv('DBHOST'),$username,$password);
     @mysql_select_db($database) or die( "Unable to select database");
 }
 

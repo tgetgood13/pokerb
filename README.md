@@ -25,6 +25,8 @@ Won ($ with comma & decimal point if needed)
 Comments
 
 
-Notes:
+Notes / TO-DO:
 Not sure they exist anymore but pokerb app doesn't parse 1/1 tourneys
  - e.g. a rebuy and a bounty combined
+Also it can't handle a Progressive KO format... it will only count the number of bounties at the original rate
+ - this is a severe limitation
