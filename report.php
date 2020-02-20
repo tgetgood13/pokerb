@@ -5,7 +5,7 @@
 */
 	include("header.php");
 	
-	function displayCashAmount($db, $c, $n)
+	function displayCashAmount($c, $n)
 	{
 		if($n<0) return "<span style=\"color:#f00;\">-".$c.number_format($n*-1,2)."</span>";
 		else return $c.number_format($n,2);

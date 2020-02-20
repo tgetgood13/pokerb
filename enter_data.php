@@ -11,7 +11,7 @@
 		$datae = $_POST["datae"];
 		
 		$new_session = false;
-		$session_id = getLastSessionId(false);
+		$session_id = getLastSessionId($db, false);
 		
 		// session id
 		if(isset($_POST["oldsession"]) && $_POST["oldsession"]=="on")
@@ -71,11 +71,11 @@
 			$cash = getMoneyAmount($fs[10]);
 			$comments = stripslashes($fs[11]);
 						
-			$tid = getTournamentIdBySiteTimeCost($time,$site,$cost, false);
+			$tid = getTournamentIdBySiteTimeCost($db, $time,$site,$cost, false);
 			
 			if(mysql_numrows($tid)>0)
 			{
-				addTournamentRecord(mysql_result($tid,0,"tournament_id"), $session_id, $date, $tlen, $firstpl, $rby, $bounty, $enter, $place, $score, $cash, $comments, false);
+				addTournamentRecord(mysql_result($db, $tid,0,"tournament_id"), $session_id, $date, $tlen, $firstpl, $rby, $bounty, $enter, $place, $score, $cash, $comments, false);
 			}
 			else
 			{
@@ -83,11 +83,11 @@
 				
 				echo $time." ".$site." ".$cost." not found, trying 1r+1a...";
 				
-				$tid = getTournamentIdBySiteTimeTotalCost($time,$site,$cost, false);
+				$tid = getTournamentIdBySiteTimeTotalCost($db, $time,$site,$cost, false);
 				
 				if(mysql_numrows($tid)>0)
 				{
-					addTournamentRecord(mysql_result($tid,0,"tournament_id"), $session_id, $date, $tlen, $firstpl, $rby, $bounty, $enter, $place, $score, $cash, $comments, false);
+					addTournamentRecord($db, mysql_result($tid,0,"tournament_id"), $session_id, $date, $tlen, $firstpl, $rby, $bounty, $enter, $place, $score, $cash, $comments, false);
 				}
 				else
 				{
@@ -98,8 +98,8 @@
 			$actr++;
 		}
 
-		if($new_session) createNewSession($session_id, true);
-		else updateSessionEnd($session_id, true);
+		if($new_session) createNewSession($db, $session_id, true);
+		else updateSessionEnd($db, $session_id, true);
 					
 		echo $actr." results added.";
 
