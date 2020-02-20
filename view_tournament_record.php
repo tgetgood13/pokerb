@@ -10,9 +10,9 @@
 
 	$tid = $_GET["t"];
 
-	$rset = getTournamentRecordByTournamentId($tid, true);
+	$rset = getTournamentRecordByTournamentId($db, $tid, true);
 
-	$tentries = mysql_numrows($rset);
+	$tentries = mysqli_num_rows($rset);
 	$tlength = 0;
 	$tbuyin = 0;
 	$trebuys = 0;
@@ -39,7 +39,7 @@
 		<th>Comments</th>
 	</tr>
 <?php
-	for($i=0; $i<mysql_numrows($rset); $i++)
+	for($i=0; $i<mysqli_num_rows($rset); $i++)
 	{
 		echo "<tr>";
 		
