@@ -165,7 +165,7 @@ Buy-In: $<input type="text" name="buy_in"/><br/>
 Effective Buy-In: $<input type="text" name="ef_buy_in"/><br/>
 <select name="game">
 <?php
-	for($i=0; $i<mysqli_numrows($tgset); $i++)
+	for($i=0; $i<mysqli_num_rows($tgset); $i++)
 	{
 		echo "<option value=\"".mysql_result($tgset,$i,"game_id")."\">".mysql_result($tgset,$i,"short_name")."</option>";
 	}
@@ -173,7 +173,7 @@ Effective Buy-In: $<input type="text" name="ef_buy_in"/><br/>
 </select>
 <select name="type">
 <?php
-	for($i=0; $i<mysqli_numrows($tyset); $i++)
+	for($i=0; $i<mysqli_num_rows($tyset); $i++)
 	{
 		echo "<option value=\"".mysql_result($tyset,$i,"type_id")."\">".mysql_result($tyset,$i,"short_name")."</option>";
 	}
@@ -189,7 +189,7 @@ Effective Buy-In: $<input type="text" name="ef_buy_in"/><br/>
 Description: <input type="text" name="description"/>
 <select name="days">
 <?php
-	for($i=0; $i<mysqli_numrows($dset); $i++)
+	for($i=0; $i<mysqli_num_rows($dset); $i++)
 	{
 		echo "<option value=\"".mysql_result($dset,$i,"days_id")."\">".mysql_result($dset,$i,"description")."</option>";
 	}
@@ -204,7 +204,7 @@ Rebuy/Add-On Amount <input type="text" name="rebuy_addon" value="0" /> Bounty <i
 <form action="edit_tournament.php" method="post">
 <select name="t">
 <?php
-	for($i=0; $i<mysqli_numrows($tset); $i++)
+	for($i=0; $i<mysqli_num_rows($tset); $i++)
 	{
 		echo "<option value=\"".mysql_result($tset,$i,"tournament_id")."\">".mysql_result($tset,$i,"site_name")." ".mysql_result($tset,$i,"start_time")." $".mysql_result($tset,$i,"buy_in")."</option>";
 	}
@@ -222,7 +222,7 @@ function displaySchedule($db, $scset, $sset, $level_string, $game_string, $type_
 {
 	$levels = getAllLevels($db, false);
 
-	for($i=0; $i<mysqli_numrows($scset); $i++)
+	for($i=0; $i<mysqli_num_rows($scset); $i++)
 	{
 		$buy_in = mysql_result($scset,$i,"buy_in");
 		$rebuy = mysql_result($scset,$i,"rebuy");
@@ -235,7 +235,7 @@ function displaySchedule($db, $scset, $sset, $level_string, $game_string, $type_
 			{
 				foreach (explode(",",$level_string) as $lv)
 				{
-					for($l=0; $l<mysqli_numrows($levels); $l++)
+					for($l=0; $l<mysqli_num_rows($levels); $l++)
 					{
 						if($lv==mysql_result($levels,$l,"level_id"))
 						{
