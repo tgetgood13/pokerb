@@ -11,11 +11,6 @@ include("../dblayer.php");
 
 function openProdConnection()
 {
-	$app->get('/', function() use($app) {
-		$app['monolog']->addDebug('logging output.');
-		return str_repeat('Hello', getenv('TIMES'));
-	  });
-
 	$username=getenv('DBUSER');
 	$password=getenv('DBPASS');
     $database=getenv('DBNAME');
