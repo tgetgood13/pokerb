@@ -28,13 +28,13 @@
 		if($defunct=="on") $defunct=1;
 		else $defunct=0;
 		
-		updateTournament($t, $site,$start_time,$buy_in,$ef_buy_in,$type,$ttype,$game,$description,$days,$rebuy,$rebuy_addon,$bounty, $ignore, $defunct, true);
+		updateTournament($db, $t, $site,$start_time,$buy_in,$ef_buy_in,$type,$ttype,$game,$description,$days,$rebuy,$rebuy_addon,$bounty, $ignore, $defunct, true);
 
 		$hourly_rate = post_checkDouble("hourly_rate");
 		$average_score = post_checkDouble("average_score");
 		$best_profit = post_checkDouble("best_profit");
 		
-		updateTournamentStats($t, $hourly_rate, $average_score, $best_profit, true);
+		updateTournamentStats($db, $t, $hourly_rate, $average_score, $best_profit, true);
 		
 		echo "Tournament updated OK";
 	}
@@ -45,13 +45,13 @@
 		
 		$num_sites = 7;
 
-		$tset = getTournamentById($t, true);
-		$tsset = getTournamentStatsById($t, true);
-		$sset = getAllSites(false);
-		$tgset = getAllGames(true);
-		$tyset = getAllTypes(false);
-		$dset = getAllDays(false);
-		$lset = getAllLevels(false);
+		$tset = getTournamentById($db, $t, true);
+		$tsset = getTournamentStatsById($db, $t, true);
+		$sset = getAllSites($db, false);
+		$tgset = getAllGames($db, true);
+		$tyset = getAllTypes($db, false);
+		$dset = getAllDays($db, false);
+		$lset = getAllLevels($db, false);
 		
 		$hourly_rate = mysql_result($tsset,0,"hourly_rate");
 		$average_score = mysql_result($tsset,0,"average_score");
@@ -75,7 +75,7 @@
 		Effective Buy-In: $<input type="text" name="ef_buy_in" value="<?php echo mysql_result($tset,0,"ef_buy_in");?>"/><br/>
 		<select name="game">
 <?php
-			for($i=0; $i<mysql_numrows($tgset); $i++)
+			for($i=0; $i<mysqli_num_rows($tgset); $i++)
 			{
 				$selected = "";
 				if(mysql_result($tset,0,"game_id")==mysql_result($tgset,$i,"game_id")) $selected=" selected=\"selected\"";
@@ -86,7 +86,7 @@
 		</select>
 		<select name="type">
 <?php
-			for($i=0; $i<mysql_numrows($tyset); $i++)
+			for($i=0; $i<mysqli_num_rows($tyset); $i++)
 			{
 				$selected = "";
 				if(mysql_result($tset,0,"type_id")==mysql_result($tyset,$i,"type_id")) $selected=" selected=\"selected\"";
@@ -105,7 +105,7 @@
 		Description: <input type="text" name="description" value="<?php echo mysql_result($tset,0,"description");?>"/>
 		<select name="days">
 <?php
-			for($i=0; $i<mysql_numrows($dset); $i++)
+			for($i=0; $i<mysqli_num_rows($dset); $i++)
 			{
 				$selected = "";
 				if(mysql_result($tset,0,"days_id")==mysql_result($dset,$i,"days_id")) $selected=" selected=\"selected\"";

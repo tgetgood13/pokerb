@@ -75,7 +75,7 @@
 			
 			if(mysqli_num_rows($tid)>0)
 			{
-				addTournamentRecord(mysql_result($db, $tid,0,"tournament_id"), $session_id, $date, $tlen, $firstpl, $rby, $bounty, $enter, $place, $score, $cash, $comments, false);
+				addTournamentRecord($db, mysql_result($tid,0,"tournament_id"), $session_id, $date, $tlen, $firstpl, $rby, $bounty, $enter, $place, $score, $cash, $comments, false);
 			}
 			else
 			{
