@@ -2,7 +2,7 @@
 /*
 	Author: Tom Getgood 
 */
-close();
+close($db);
 ?>
 </body>
 </html>

@@ -5,7 +5,7 @@
 */
 	include("header.php");
 	
-	function displayCashAmount($c, $n)
+	function displayCashAmount($db, $c, $n)
 	{
 		if($n<0) return "<span style=\"color:#f00;\">-".$c.number_format($n*-1,2)."</span>";
 		else return $c.number_format($n,2);
@@ -27,7 +27,7 @@
 		
 		if($view=="s")
 		{
-			$rset = getSessionSpecificReport($s, $y, $m, true);
+			$rset = getSessionSpecificReport($db, $s, $y, $m, true);
 ?>
 			<br/><a href="report.php?view=n<?php echo $linkStr;?>">normal</a> |  <a href="report.php?view=s<?php echo $linkStr;?>">session</a><br/>
 			<table cellspacing="0" cellpadding="4">
@@ -46,7 +46,7 @@
 				</tr>
 <?php
 			$alt = true;
-			for($i=0; $i<mysql_numrows($rset); $i++)
+			for($i=0; $i<mysqli_num_rows($rset); $i++)
 			{
 				$alt = !$alt;
 				echo "<tr".(($alt)?" class=\"alt\"":"").">";
@@ -69,7 +69,7 @@
 		}
 		else
 		{
-			$rset = getSpecificReport($s, $y, $m, true);
+			$rset = getSpecificReport($db, $s, $y, $m, true);
 ?>
 			<br/><a href="report.php?view=n<?php echo $linkStr;?>">normal</a> |  <a href="report.php?view=s<?php echo $linkStr;?>">session</a><br/>
 			<table cellspacing="0" cellpadding="4" style="font-size:smaller;">
@@ -91,7 +91,7 @@
 <?php
 			$alt = true;
 			$alt_date = "";
-			for($i=0; $i<mysql_numrows($rset); $i++)
+			for($i=0; $i<mysqli_num_rows($rset); $i++)
 			{
 				if($alt_date!=mysql_result($rset,$i,"session_id"))
 				{
@@ -140,7 +140,7 @@
 	}
 	else
 	{
-	$rset = getMonthlyReport(true);
+	$rset = getMonthlyReport($db, true);
 
 	$sites = array("PP","FT","88","BF","PS","PD");
 	$site_lost = array(0,0,0,0,0,0);
@@ -209,7 +209,7 @@
 <?php
 	$tr_ctr = 0;
 
-	while($tr_ctr<mysql_numrows($rset))
+	while($tr_ctr<mysqli_num_rows($rset))
 	{
 		$month = mysql_result($rset,$tr_ctr,"month");
 		
@@ -233,13 +233,13 @@
 				echo "<td align=\"right\">".displayCashAmount("$", $month_won-$month_lost)."</td>";
 				echo "<td>".$month_123." (".number_format($month_123/$month_itm,2)."%)</td>";
 				
-				echo "<td style=\"color:#0c0;\">".displayCashAmount("£", ($month_lost*0.08)*0.6)."</td>";
+				echo "<td style=\"color:#0c0;\">".displayCashAmount("ï¿½", ($month_lost*0.08)*0.6)."</td>";
 				
 				echo "<td>";
 				if(mysql_result($rset,$tr_ctr,"month")==1) echo "<b>".displayCashAmount("$",$year_profit[$year_ctr])."</b>";
 				echo "</td>";
 				echo "<td style=\"color:#0c0;\">";
-				if(mysql_result($rset,$tr_ctr,"month")==1) echo displayCashAmount("£", ($year_earnings[$year_ctr]*0.08)*0.6);
+				if(mysql_result($rset,$tr_ctr,"month")==1) echo displayCashAmount("ï¿½", ($year_earnings[$year_ctr]*0.08)*0.6);
 				echo "</td>";
 	
 				echo "</tr>";
@@ -321,13 +321,13 @@
 	echo "<td align=\"right\">".displayCashAmount("$", $month_won-$month_lost)."</td>";
 	echo "<td>".$month_123." (".number_format($month_123/$month_itm,2)."%)</td>";
 	
-	echo "<td style=\"color:#0c0;\">".displayCashAmount("£", ($month_lost*0.08)*0.6)."</td>";
+	echo "<td style=\"color:#0c0;\">".displayCashAmount("ï¿½", ($month_lost*0.08)*0.6)."</td>";
 	
 	echo "<td><b>";
 	echo displayCashAmount("$", $year_profit[$year_ctr]);
 	echo "</b></td>";
 	echo "<td style=\"color:#0c0;\">";
-	echo displayCashAmount("£", ($year_earnings[$year_ctr]*0.08)*0.6);
+	echo displayCashAmount("ï¿½", ($year_earnings[$year_ctr]*0.08)*0.6);
 	echo "</td>";
 	
 	echo "</tr>";
