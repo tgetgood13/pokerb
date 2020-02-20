@@ -10,7 +10,7 @@
 
 	$l = $_GET["level"];
 
-	$tset = getFullSchedule(true);
+	$tset = getFullSchedule($db, true);
 ?>
 
 	<table>
@@ -27,7 +27,7 @@
 		<th></th>
 	</tr>
 <?php
-	for($i=0; $i<mysql_numrows($tset); $i++)
+	for($i=0; $i<mysqli_num_rows($tset); $i++)
 	{
 		$level = mysql_result($tset,$i,"level_id");
 		
