@@ -30,7 +30,7 @@ if(isset($_SESSION['username']) && userCheck($db, $_SESSION['username'],$_SESSIO
 }
 else
 {
-        close();
+        close($db);
 
         $url = "login.php";
         $url = "Location: ".$url;

@@ -11,9 +11,9 @@ $state = "none";
 
 if (isset($_SESSION['username']))
 {
-        openProdConnection();
-        $uCheck = userCheck($_SESSION['username'],$_SESSION['SessionId']);
-        close();
+        $db = openProdConnection();
+        $uCheck = userCheck($db, $_SESSION['username'],$_SESSION['SessionId']);
+        close($db);
 
         if($uCheck>0)
         {
@@ -33,15 +33,15 @@ else
                 $username = $_POST['username'];
                 $password = $_POST['password'];
         
-                openProdConnection();
-                $sCheck = securityCheck($username,$password);
+                $db = openProdConnection();
+                $sCheck = securityCheck($db, $username,$password);
                 if($sCheck>0)
                 {
-		                $sessionId = mt_rand();
-                        logAdminSession($sessionId,$username);
-                        close();
+		        $sessionId = mt_rand();
+                        logAdminSession($db, $sessionId,$username);
+                        close($db);
 
-						$_SESSION["SessionId"] = $sessionId;
+			$_SESSION["SessionId"] = $sessionId;
                         $_SESSION['username'] = $username;
 
                         $url = "index.php";
@@ -50,7 +50,7 @@ else
                 }
                 else
                 {
-                        close();
+                        close($db);
                         $state="error";
 
                 }
@@ -79,11 +79,11 @@ else
 if($state=="error")
 {
 ?>
-		<p>
-			<br/>
+	<p>
+		<br/>
 	        Incorrect username/password combo.<br/>
 	        <br/>
-	    </p>
+	</p>
 <?php
 }
 else if($state=="login")
