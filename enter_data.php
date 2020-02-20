@@ -70,10 +70,10 @@
 			$score = getScore($fs[9]);
 			$cash = getMoneyAmount($fs[10]);
 			$comments = stripslashes($fs[11]);
-						
+
 			$tid = getTournamentIdBySiteTimeCost($db, $time,$site,$cost, false);
 			
-			if(mysql_numrows($tid)>0)
+			if(mysqli_num_rows($tid)>0)
 			{
 				addTournamentRecord(mysql_result($db, $tid,0,"tournament_id"), $session_id, $date, $tlen, $firstpl, $rby, $bounty, $enter, $place, $score, $cash, $comments, false);
 			}
@@ -85,7 +85,7 @@
 				
 				$tid = getTournamentIdBySiteTimeTotalCost($db, $time,$site,$cost, false);
 				
-				if(mysql_numrows($tid)>0)
+				if(mysqli_num_rows($tid)>0)
 				{
 					addTournamentRecord($db, mysql_result($tid,0,"tournament_id"), $session_id, $date, $tlen, $firstpl, $rby, $bounty, $enter, $place, $score, $cash, $comments, false);
 				}

@@ -10,7 +10,7 @@
 
 	//$l = $_GET["level"];
 
-	$tset = getBaseMostProfitable(true);
+	$tset = getBaseMostProfitable($db, true);
 ?>	
 	<form action="top_tourneys.php" method="post">
 	Sites:<br/>
@@ -53,7 +53,7 @@
 <?php
 	
 
-	for($i=0; $i<mysql_numrows($tset); $i++)
+	for($i=0; $i<mysqli_num_rows($tset); $i++)
 	{
 		$tfirst = mysql_result($tset,$i,"tfirst");
 		$tfirstx = mysql_result($tset,$i,"tfirstx");
