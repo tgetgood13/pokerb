@@ -55,12 +55,12 @@
 	$num_sites = 7;
 	$sites_in_play = "";
 
-	$tset = getAllTournaments(false);
-	$sset = getAllSites(true);
-	$tgset = getAllGames(true);
-	$tyset = getAllTypes(false);
-	$dset = getAllDays(false);
-	$lset = getAllLevels(false);
+	$tset = getAllTournaments($db, false);
+	$sset = getAllSites($db, true);
+	$tgset = getAllGames($db, true);
+	$tyset = getAllTypes($db, false);
+	$dset = getAllDays($db, false);
+	$lset = getAllLevels($db, false);
 ?>
 
 <br/>
@@ -135,17 +135,17 @@ Min payout for first: $<input type="text" name="minfirst"/><br/>
 	
 	if($hr<$tdiff)
 	{
-		$scset1 = getUpcomingSchedule(date("Hi",$tnow), "2359", $day_now, true);
-		$scset2 = getUpcomingSchedule("0000", $hr.$mn, $day_later, true);
+		$scset1 = getUpcomingSchedule($db, date("Hi",$tnow), "2359", $day_now, true);
+		$scset2 = getUpcomingSchedule($db, "0000", $hr.$mn, $day_later, true);
 
-		displaySchedule($scset1, $sset, $levels, $games, $types, $minfirst, $sites);
-		displaySchedule($scset2, $sset, $levels, $games, $types, $minfirst, $sites);
+		displaySchedule($db, $scset1, $sset, $levels, $games, $types, $minfirst, $sites);
+		displaySchedule($db, $scset2, $sset, $levels, $games, $types, $minfirst, $sites);
 	}
 	else
 	{
-		$scset = getUpcomingSchedule(date("Hi",$tnow), $hr.$mn, $day_now, true);
+		$scset = getUpcomingSchedule($db, date("Hi",$tnow), $hr.$mn, $day_now, true);
 
-		displaySchedule($scset, $sset, $levels, $games, $types, $minfirst, $sites);
+		displaySchedule($db, $scset, $sset, $levels, $games, $types, $minfirst, $sites);
 	}
 	
 	echo "</table>";
@@ -165,7 +165,7 @@ Buy-In: $<input type="text" name="buy_in"/><br/>
 Effective Buy-In: $<input type="text" name="ef_buy_in"/><br/>
 <select name="game">
 <?php
-	for($i=0; $i<mysql_numrows($tgset); $i++)
+	for($i=0; $i<mysqli_numrows($tgset); $i++)
 	{
 		echo "<option value=\"".mysql_result($tgset,$i,"game_id")."\">".mysql_result($tgset,$i,"short_name")."</option>";
 	}
@@ -173,7 +173,7 @@ Effective Buy-In: $<input type="text" name="ef_buy_in"/><br/>
 </select>
 <select name="type">
 <?php
-	for($i=0; $i<mysql_numrows($tyset); $i++)
+	for($i=0; $i<mysqli_numrows($tyset); $i++)
 	{
 		echo "<option value=\"".mysql_result($tyset,$i,"type_id")."\">".mysql_result($tyset,$i,"short_name")."</option>";
 	}
@@ -189,7 +189,7 @@ Effective Buy-In: $<input type="text" name="ef_buy_in"/><br/>
 Description: <input type="text" name="description"/>
 <select name="days">
 <?php
-	for($i=0; $i<mysql_numrows($dset); $i++)
+	for($i=0; $i<mysqli_numrows($dset); $i++)
 	{
 		echo "<option value=\"".mysql_result($dset,$i,"days_id")."\">".mysql_result($dset,$i,"description")."</option>";
 	}
@@ -204,7 +204,7 @@ Rebuy/Add-On Amount <input type="text" name="rebuy_addon" value="0" /> Bounty <i
 <form action="edit_tournament.php" method="post">
 <select name="t">
 <?php
-	for($i=0; $i<mysql_numrows($tset); $i++)
+	for($i=0; $i<mysqli_numrows($tset); $i++)
 	{
 		echo "<option value=\"".mysql_result($tset,$i,"tournament_id")."\">".mysql_result($tset,$i,"site_name")." ".mysql_result($tset,$i,"start_time")." $".mysql_result($tset,$i,"buy_in")."</option>";
 	}
@@ -218,11 +218,11 @@ CASH - more than $1k for first
 <?php
 	include("footer.php");
 
-function displaySchedule($scset, $sset, $level_string, $game_string, $type_string, $minfirst, $site_string)
+function displaySchedule($db, $scset, $sset, $level_string, $game_string, $type_string, $minfirst, $site_string)
 {
-	$levels = getAllLevels(false);
+	$levels = getAllLevels($db, false);
 
-	for($i=0; $i<mysql_numrows($scset); $i++)
+	for($i=0; $i<mysqli_numrows($scset); $i++)
 	{
 		$buy_in = mysql_result($scset,$i,"buy_in");
 		$rebuy = mysql_result($scset,$i,"rebuy");
@@ -235,7 +235,7 @@ function displaySchedule($scset, $sset, $level_string, $game_string, $type_strin
 			{
 				foreach (explode(",",$level_string) as $lv)
 				{
-					for($l=0; $l<mysql_numrows($levels); $l++)
+					for($l=0; $l<mysqli_numrows($levels); $l++)
 					{
 						if($lv==mysql_result($levels,$l,"level_id"))
 						{

@@ -41,7 +41,7 @@ function db_select($db, $query)
 
 function db_insert($db, $query)
 {
-        mysqli_queryi($db, $query);
+        mysqli_query($db, $query);
         return mysqli_insert_id($db);
 }
 
