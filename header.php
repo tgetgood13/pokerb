@@ -6,9 +6,9 @@ session_start();
 
 include("dbase.php");
 
-openProdConnection();
+$db = openProdConnection();
 
-if(isset($_SESSION['username']) && userCheck($_SESSION['username'],$_SESSION['SessionId'])>0)
+if(isset($_SESSION['username']) && userCheck($db, $_SESSION['username'],$_SESSION['SessionId'])>0)
 {
 
 ?>

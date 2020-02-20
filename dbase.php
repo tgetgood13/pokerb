@@ -11,84 +11,90 @@ include("dblayer.php");
 
 function openProdConnection()
 {
-	$username=getenv('DBUSER');
-	$password=getenv('DBPASS');
-    $database=getenv('DBNAME');
+	$username = getenv('DBUSER');
+	$password = getenv('DBPASS');
+	$database = getenv('DBNAME');
+	$host = getenv('DBHOST');
 	
-	mysql_connect(getenv('DBHOST'),$username,$password);
-    @mysql_select_db($database) or die( "Unable to select database");
+	$mysqli = new mysqli($host, $username, $password, $database);
+	if ($mysqli -> connect_errno) {
+		echo "Failed to connect to MySQL: " . $mysqli -> connect_error;
+		exit();
+	  }
+
+	return $mysqli;
 }
 
-function close()
+function close($db)
 {
-        mysql_close();
+        mysqli_close($db);
 }
 
-function getAllTournaments($debug)
+function getAllTournaments($db, $debug)
 {
 	$query = "SELECT s.short_name AS site_name,t.tournament_id,t.site_id,t.start_time,t.buy_in,t.ef_buy_in,t.type_id,t.ttype,t.description,t.days_id,t.rebuy,t.ignore_t FROM tPkrTournament t";
 	$query.=" JOIN tPkrSite s ON s.site_id=t.site_id";
 	$query.=" ORDER BY t.start_time, s.site_id";
 
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getAllSites($debug)
+function getAllSites($db, $debug)
 {
 	$query = "SELECT s.site_id,s.name,s.pounds,s.display_color,s.short_name,s.notes,st.balance FROM tPkrSite s";
 	$query.=" JOIN tPkrSiteState st ON st.site_id=s.site_id";
 	$query.=" ORDER BY date_created DESC";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getAllGames($debug)
+function getAllGames($db, $debug)
 {
 	$query = "SELECT game_id,short_name,description FROM tPkrGame";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getAllTypes($debug)
+function getAllTypes($db, $debug)
 {
 	$query = "SELECT type_id,short_name,description FROM tPkrType";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getAllDays($debug)
+function getAllDays($db, $debug)
 {
 	$query = "SELECT days_id,description FROM tPkrDays";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getTournamentById($tid, $debug)
+function getTournamentById($db, $tid, $debug)
 {
 	$tid = db_checkInt($tid);
 	
 	$query = "SELECT site_id,start_time,buy_in,ef_buy_in,type_id,game_id,ttype,description,days_id,rebuy,rebuy_addon,bounty,ignore_t,defunct_t FROM tPkrTournament WHERE tournament_id=$tid";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getTournamentStatsById($tid, $debug)
+function getTournamentStatsById($db, $tid, $debug)
 {
 	$tid = db_checkInt($tid);
 	
 	$query = "SELECT hourly_rate, best_profit, average_score FROM tPkrTournamentStats WHERE tournament_id=$tid";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function addTournament($site,$start_time,$buy_in,$ef_buy_in,$type,$ttype,$game,$description,$days,$rebuy,$rebuy_addon,$bounty, $debug)
+function addTournament($db, $site,$start_time,$buy_in,$ef_buy_in,$type,$ttype,$game,$description,$days,$rebuy,$rebuy_addon,$bounty, $debug)
 {
 	$site = db_checkInt($site);
 	$start_time = db_checkString($start_time);
@@ -105,10 +111,10 @@ function addTournament($site,$start_time,$buy_in,$ef_buy_in,$type,$ttype,$game,$
 	 
 	$query = "INSERT INTO tPkrTournament VALUES (null,$site,$start_time,$buy_in,$ef_buy_in,$type,$ttype,$game,$description,$days,$rebuy,$rebuy_addon,$bounty,0,0)";
 	if($debug) echo $query;
-	return db_insert($query);
+	return db_insert($db, $query);
 }
 
-function updateTournament($tid, $site,$start_time,$buy_in,$ef_buy_in,$type,$ttype,$game,$description,$days,$rebuy,$rebuy_addon,$bounty, $ignore, $defunct, $debug)
+function updateTournament($db, $tid, $site,$start_time,$buy_in,$ef_buy_in,$type,$ttype,$game,$description,$days,$rebuy,$rebuy_addon,$bounty, $ignore, $defunct, $debug)
 {
 	$tid = db_checkInt($tid);
 	$site = db_checkInt($site);
@@ -128,10 +134,10 @@ function updateTournament($tid, $site,$start_time,$buy_in,$ef_buy_in,$type,$ttyp
 	
 	$query = "UPDATE tPkrTournament SET site_id=$site, start_time=$start_time, buy_in=$buy_in, ef_buy_in=$ef_buy_in, type_id=$type, ttype=$ttype, game_id=$game, description=$description, days_id=$days, rebuy=$rebuy, rebuy_addon=$rebuy_addon, bounty=$bounty, ignore_t=$ignore, defunct_t=$defunct WHERE tournament_id=$tid";
 	if($debug) echo $query;
-	return db_update($query);
+	return db_update($db, $query);
 }
 
-function updateTournamentStats($tid, $hourly_rate, $average_score, $best_profit, $debug)
+function updateTournamentStats($db, $tid, $hourly_rate, $average_score, $best_profit, $debug)
 {
 	$tid = db_checkInt($tid);
 	$hourly_rate = db_checkDouble($hourly_rate);
@@ -139,13 +145,13 @@ function updateTournamentStats($tid, $hourly_rate, $average_score, $best_profit,
 	$best_profit = db_checkDouble($best_profit);
 
 	$query = "DELETE FROM tPkrTournamentStats WHERE tournament_id=$tid";
-	db_delete($query);
+	db_delete($db, $query);
 	
 	$query = "INSERT INTO tPkrTournamentStats VALUES ($tid, $hourly_rate, $average_score, $best_profit)";
-	return db_insert($query);
+	return db_insert($db, $query);
 }
 
-function getTournamentIdBySiteTimeCost($time, $site, $cost, $debug)
+function getTournamentIdBySiteTimeCost($db, $time, $site, $cost, $debug)
 {
 	$time = db_checkString($time);
 	$site = db_checkString($site);
@@ -153,10 +159,10 @@ function getTournamentIdBySiteTimeCost($time, $site, $cost, $debug)
 	
 	$query = "SELECT tournament_id FROM tPkrTournament WHERE site_id=(SELECT site_id FROM tPkrSite WHERE short_name=$site) AND start_time=$time AND buy_in=$cost AND defunct_t=0";
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getTournamentIdBySiteTimeTotalCost($time, $site, $cost, $debug)
+function getTournamentIdBySiteTimeTotalCost($db, $time, $site, $cost, $debug)
 {
 	$time = db_checkString($time);
 	$site = db_checkString($site);
@@ -164,19 +170,19 @@ function getTournamentIdBySiteTimeTotalCost($time, $site, $cost, $debug)
 	
 	$query = "SELECT tournament_id FROM tPkrTournament WHERE site_id=(SELECT site_id FROM tPkrSite WHERE short_name=$site) AND start_time=$time AND buy_in-(rebuy_addon*2)=$cost AND defunct_t=0";
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getTournamentRecordByTournamentId($tid, $debug)
+function getTournamentRecordByTournamentId($db, $tid, $debug)
 {
 	$tid = db_checkInt($tid);
 	
 	$query = "SELECT tr.tdate,t.start_time,date_format(tr.tdate,'%W') AS day, s.short_name,t.buy_in,t.rebuy_addon, t.bounty, t.description,tr.tlength,tr.first_place,tr.rebuys,tr.bounties,tr.entrants,tr.place,tr.score,tr.cash,tr.comments FROM tPkrTournamentRecord tr JOIN tPkrTournament t ON t.tournament_id=tr.tournament_id JOIN tPkrSite s ON s.site_id=t.site_id WHERE tr.tournament_id=$tid ORDER BY tr.tdate ASC";
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function addTournamentRecord($tid,$sid,$date,$length,$first,$rebuy,$bounty,$entrants,$place,$score,$cash,$comments, $debug)
+function addTournamentRecord($db, $tid,$sid,$date,$length,$first,$rebuy,$bounty,$entrants,$place,$score,$cash,$comments, $debug)
 {
 	$tid = db_checkInt($tid);
 	$sid = db_checkInt($sid);
@@ -193,35 +199,35 @@ function addTournamentRecord($tid,$sid,$date,$length,$first,$rebuy,$bounty,$entr
 	
 	$query = "INSERT INTO tPkrTournamentRecord VALUES (null,$tid,$sid,$tdate,$tlen,$first,$rebuy,$bounty,$entrants,$place,$score,$cash,$comments)";
 	if($debug) echo $query;
-	return db_insert($query);
+	return db_insert($db, $query);
 }
 
-function getLastSessionId($debug)
+function getLastSessionId($db, $debug)
 {
 	$query = "SELECT MAX(session_id) AS id FROM tPkrSession";
 	
 	if($debug) echo $query;
-	return mysql_result(db_select($query),0,"id");
+	return mysql_result(db_select($db, $query),0,"id");
 }
 
-function createNewSession($sid, $debug)
+function createNewSession($db, $sid, $debug)
 {
 	$sid = db_checkInt($sid);
 	
 	$start = "SELECT CONCAT_WS(' ', r.tdate, CONCAT_WS(':', LEFT(t.start_time,2), MID(t.start_time,3,2),'00')) AS start FROM tPkrTournamentRecord r JOIN tPkrTournament t ON t.tournament_id=r.tournament_id WHERE session_id=$sid ORDER BY tdate, start_time LIMIT 1";
 	if($debug) echo $start;
-	$start = mysql_result(db_select($start),0,"start");
+	$start = mysql_result(db_select($db, $start),0,"start");
 	
 	$end = "SELECT DATE_ADD(CONCAT_WS(' ', r.tdate, CONCAT_WS(':', LEFT(t.start_time,2), MID(t.start_time,3,2),'00')), INTERVAL r.tlength MINUTE) AS end FROM `tPkrTournamentRecord` r JOIN tPkrTournament t ON t.tournament_id=r.tournament_id WHERE session_id=$sid ORDER BY DATE_ADD(CONCAT_WS(' ', r.tdate, CONCAT_WS(':', LEFT(t.start_time,2), MID(t.start_time,3,2),'00')), INTERVAL r.tlength MINUTE) DESC LIMIT 1";
 	if($debug) echo $end;
-	$end = mysql_result(db_select($end),0,"end");
+	$end = mysql_result(db_select($db, $end),0,"end");
 
 	$query="INSERT INTO tPkrSession VALUES ($sid,'$start','$end')";
 	if($debug) echo $query;
-	return db_insert($query);
+	return db_insert($db, $query);
 }
 
-function updateSessionEnd($sid, $debug)
+function updateSessionEnd($db, $sid, $debug)
 {
 	$sid = db_checkInt($sid);
 	
@@ -231,20 +237,20 @@ function updateSessionEnd($sid, $debug)
 	$query.= " ORDER BY DATE_ADD(CONCAT_WS(' ', r.tdate, CONCAT_WS(':', LEFT(t.start_time,2), MID(t.start_time,3,2),'00')), INTERVAL r.tlength MINUTE) DESC LIMIT 1) WHERE session_id=$sid";
 
 	if($debug) echo $query;
-	return db_update($query);
+	return db_update($db, $query);
 }
 
-function addSiteState($site, $balance, $debug)
+function addSiteState($db, $site, $balance, $debug)
 {
 	$site = db_checkInt($site);
 	$balance = db_checkDouble($balance);
 	
 	$query = "INSERT INTO tPkrSiteState VALUES (null, $site, $balance, now())";
 	if($debug) echo $query;
-	return db_insert($query);
+	return db_insert($db, $query);
 }
 
-function getFullSchedule($debug)
+function getFullSchedule($db, $debug)
 {
 	$query = "SELECT t.tournament_id, t.start_time, d.description AS days, s.short_name AS site_name, s.display_color AS site_color, ty.short_name AS type_name, tg.short_name AS game_name, t.ef_buy_in AS buy_in, t.description, l.level_id, l.display_color AS level_color,t.ttype, ts.hourly_rate, ts.best_profit, ts.average_score, t.ignore_t, t.defunct_t FROM tPkrTournament t";
 	$query.=" JOIN tPkrDays d ON d.days_id=t.days_id";
@@ -256,10 +262,10 @@ function getFullSchedule($debug)
 	$query.=" ORDER BY start_time ASC, buy_in DESC";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getMonthlyReport($debug)
+function getMonthlyReport($db, $debug)
 {
 	//$tid = db_checkInt($tid);
 	
@@ -272,10 +278,10 @@ function getMonthlyReport($debug)
 	$query.= " JOIN tPkrSite s ON s.site_id=t.site_id";
 	$query.= " GROUP BY s.short_name, YEAR(tr.tdate), MONTH(tr.tdate) ORDER BY YEAR(tr.tdate),MONTH(tr.tdate),s.site_id ASC";
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getSpecificReport($site, $year, $month, $debug)
+function getSpecificReport($db, $site, $year, $month, $debug)
 {
 	if(isset($site)) $site = db_checkString($site);
 	if(isset($year)) $year = db_checkInt($year);
@@ -301,10 +307,10 @@ function getSpecificReport($site, $year, $month, $debug)
 	$query.= " WHERE ".$where." ORDER BY tr.tdate, tr.session_id";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getSessionSpecificReport($site, $year, $month, $debug)
+function getSessionSpecificReport($db, $site, $year, $month, $debug)
 {
 	if(isset($site)) $site = db_checkString($site);
 	if(isset($year)) $year = db_checkInt($year);
@@ -330,18 +336,18 @@ function getSessionSpecificReport($site, $year, $month, $debug)
 	$query.= " WHERE ".$where." GROUP BY s.session_id ORDER BY s.start_datetime";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getAllLevels($debug)
+function getAllLevels($db, $debug)
 {
 	$query = "SELECT level_id,dollar_min,dollar_max,pound_min,pound_max,min_stake,max_stake,rebuy_min,rebuy_max,qual_max,qual_rebuy,other,display_color FROM tPkrLevel";
 
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
-function getUpcomingSchedule($start, $end, $day, $debug)
+function getUpcomingSchedule($db, $start, $end, $day, $debug)
 {
 	$start = db_checkString($start);
 	$end = db_checkString($end);
@@ -373,11 +379,11 @@ function getUpcomingSchedule($start, $end, $day, $debug)
 	
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
 // profit
-function getBaseMostProfitable($debug)
+function getBaseMostProfitable($db, $debug)
 {
 	$query = "SELECT t.tournament_id, t.site_id, d.description AS days, start_time, ef_buy_in AS buy_in, ty.short_name AS type_desc, tg.short_name AS game_desc, ttype, t.description, rebuy, s.display_color, s.short_name AS site_name, ts.hourly_rate, ts.best_profit, ts.average_score,";
 	$query.= " SUM(tr.score) AS tscore, SUM(tr.score>0) AS tscorex, SUM(tr.entrants) AS total_ent, SUM(tr.cash+(tr.bounties*t.bounty)-(t.buy_in+(t.rebuy_addon*tr.rebuys))) AS profit, SUM(tr.first_place) AS tfirst, SUM(tr.first_place>0) AS tfirstx, MAX(tr.cash) AS tmaxcash, COUNT(tr.id) AS tentries, MIN(tr.place) AS tminplace, SUM(tr.tlength) AS tlength, SUM(tr.cash>0) AS itm, SUM(tr.place>=1 AND tr.place<=3) AS f123 FROM tPkrTournament t";
@@ -391,11 +397,11 @@ function getBaseMostProfitable($debug)
 	$query.= " GROUP BY t.tournament_id ORDER BY buy_in, start_time, ttype DESC";
 	
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
 // shots
-function getShotsByTypeAndThreshold($type, $threshold, $year, $debug)
+function getShotsByTypeAndThreshold($db, $type, $threshold, $year, $debug)
 {
 	$type = db_checkInt($type);
 	$threshold = db_checkInt($threshold);
@@ -407,11 +413,11 @@ function getShotsByTypeAndThreshold($type, $threshold, $year, $debug)
 	$query.=" WHERE t.buy_in>=$threshold AND t.game_id=$type AND YEAR(r.tdate)=$year ORDER BY cash DESC";
 
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
 // cv
-function getCVByTypeAndThreshold($type, $threshold, $debug)
+function getCVByTypeAndThreshold($db, $type, $threshold, $debug)
 {
 	$type = db_checkInt($type);
 	$threshold = db_checkInt($threshold);
@@ -422,7 +428,7 @@ function getCVByTypeAndThreshold($type, $threshold, $debug)
 	$query.=" WHERE r.cash>=$threshold && t.game_id=$type ORDER BY cash DESC";
 
 	if($debug) echo $query;
-	return db_select($query);
+	return db_select($db, $query);
 }
 
 // quick funcs
@@ -443,32 +449,32 @@ function getNumber($num)
 
 
 //security
-function userCheck($username,$sessionId)
+function userCheck($db, $username,$sessionId)
 {
     $username = db_checkString($username);
     $sessionId = db_checkInt($sessionId);
 
     $query = "SELECT 1 FROM _log_adminsessions WHERE username=$username && sessionId=$sessionId";
 
-    $result=db_select($query);
-    return(mysql_numrows($result));
+    $result=db_select($db, $query);
+    return(mysqli_num_rows($result));
 }
 
-function securityCheck($username, $password)
+function securityCheck($db, $username, $password)
 {
     $username = db_checkString($username);
     $password = db_checkString($password);
 
 	$query = "SELECT 1 FROM tUser WHERE username=$username && password=$password";
-    $result=db_select($query);
-    return(mysql_numrows($result));
+    $result=db_select($db, $query);
+    return(mysqli_num_rows($result));
 }
 
-function logAdminSession($sessionId,$username)
+function logAdminSession($db, $sessionId,$username)
 {
     $sessionId = db_checkInt($sessionId);
     $username = db_checkString($username);
         
     $query = "INSERT INTO _log_adminsessions (sessionId,username,dateCreated) VALUES ($sessionId,$username, now())";
-    return db_insert($query);
+    return db_insert($db, $query);
 }
