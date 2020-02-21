@@ -422,10 +422,11 @@ function getCVByTypeAndThreshold($db, $type, $threshold, $debug)
 	$type = db_checkInt($type);
 	$threshold = db_checkInt($threshold);
 
-	$query = "SELECT session_id,tdate,YEAR(tdate) AS year,tlength,first_place,rebuys,bounties,entrants,place,score,cash,comments,t.tournament_id,start_time,buy_in,rebuy_addon,bounty,description,s.short_name FROM tPkrTournamentRecord r";
+	$query = "SELECT session_id,tdate,YEAR(tdate) AS year,tlength,first_place,rebuys,bounties,entrants,place,score,cash,comments,t.tournament_id,start_time,buy_in,rebuy_addon,bounty,t.description,s.short_name,tg.short_name AS game_type FROM tPkrTournamentRecord r";
 	$query.=" JOIN tPkrTournament t ON t.tournament_id=r.tournament_id";
 	$query.=" JOIN tPkrSite s ON s.site_id=t.site_id";
-	$query.=" WHERE r.cash>=$threshold && t.game_id=$type ORDER BY cash DESC";
+	$query.=" JOIN tPkrGame tg ON tg.game_id=t.game_id";
+	$query.=" WHERE r.cash>=$threshold ORDER BY cash DESC";
 
 	if($debug) echo $query;
 	return db_select($db, $query);
