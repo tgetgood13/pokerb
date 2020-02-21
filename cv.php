@@ -39,15 +39,39 @@
 				echo "<tr style=\"background-color:#ccc\">";
 				break;
 			case 2011:
-				echo "<tr style=\"background-color:#fc6\">";
+				echo "<tr style=\"background-color:#EEFFEE\">";
 				break;
 			case 2012:
-				echo "<tr style=\"background-color:#6c9\">";
+				echo "<tr style=\"background-color:#DEFDDE\">";
+				break;
+			case 2013:
+				echo "<tr style=\"background-color:#D3FED3\">";
+				break;
+			case 2014:
+				echo "<tr style=\"background-color:#C5FDC5\">";
+				break;
+			case 2015:
+				echo "<tr style=\"background-color:#BCFEBC\">";
+				break;
+			case 2016:
+				echo "<tr style=\"background-color:#ACFCAC\">";
+				break;
+			case 2017:
+				echo "<tr style=\"background-color:#96EC96\">";
+				break;
+			case 2018:
+				echo "<tr style=\"background-color:#85DD85\">";
+				break;
+			case 2019:
+				echo "<tr style=\"background-color:#69C469\">";
+				break;
+			case 2020:
+				echo "<tr style=\"background-color:#56AD56\">";
 				break;
 			default:
 				echo "<tr>";
 		}
-		
+
 		$length = mysql_result($rset,$i,"tlength")/60;
 		$buy_in = mysql_result($rset,$i,"buy_in")+(mysql_result($rset,$i,"rebuy_addon")*mysql_result($rset,$i,"rebuys"));
 		
