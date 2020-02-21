@@ -47,7 +47,7 @@ function db_insert($db, $query)
 
 function db_update($db, $query)
 {
-        mysqli_query($query);
+        mysqli_query($db, $query);
         return true;
 }
 
