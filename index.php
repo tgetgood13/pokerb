@@ -102,7 +102,7 @@ Min payout for first: $<input type="text" name="minfirst"/><br/>
 
 <?php
 	$tspan = 4;
-	$tdiff = 5;  echo "<b style=\"color:red\">Time Difference set at +$tdiff hrs</b><br/>";
+	$tdiff = 0;  echo "<b style=\"color:red\">Time Difference set at +$tdiff hrs</b><br/>";
 	$tnow = mktime(date("H")+$tdiff, date("i"), date("s"), date("n"), date("j"), date("y"));
 	$twindow = mktime(date("H")+$tdiff+$tspan, date("i"), date("s"), date("n"), date("j"), date("y"));
 	$hr = date("H", $twindow);
