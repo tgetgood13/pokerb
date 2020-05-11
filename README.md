@@ -13,7 +13,7 @@ e.g.:
 
 Date
 Start (Time)
-Site (two letter abreviation)
+Site (two letter abbreviation)
 Buy-In (BI)
 End Time (no :)
 First place ($ rounded, with comma)
